@@ -1,4 +1,7 @@
 aurora.db
-.pytest_cache
-*/__pycache__
-*/__pycache__/*
+.pytest_cache/
+
+# Exclude all __pycache__ directories anywhere in the repo
+__pycache__/
+**/__pycache__/
+
