@@ -7,8 +7,9 @@ COPY . /app
 # Install Poetry
 RUN pip install --no-cache-dir poetry
 
-# Install dependencies from pyproject.toml and install the project
+# Generate/update poetry.lock inside the image and install dependencies
 RUN poetry config virtualenvs.create false \
+    && poetry lock \
     && poetry install --no-interaction --no-ansi
 
 
