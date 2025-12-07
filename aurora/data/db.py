@@ -3,6 +3,7 @@ from sqlmodel import SQLModel, Session, select, create_engine
 from datetime import datetime
 from aurora.data import defs as data_defs
 from aurora.data.models import Message
+from tenacity import retry, stop_after_attempt, wait_exponential
 
 
 def init_db():
@@ -21,26 +22,25 @@ def init_db():
             """
         )
 
+@retry(stop=stop_after_attempt(3), wait=wait_exponential(min=1, max=10))
+def _query_api(skip, limit):
+    response = requests.get(
+        data_defs.SOURCE_URL,
+        params={
+            "skip": skip,
+            "limit": limit
+        }
+    )
+    response.raise_for_status()
+    response = response.json()
+    return response
 
 def retrieve_messages():
     all_items = []
     skip = 0
 
     while True:
-        response = requests.get(
-            data_defs.SOURCE_URL,
-            params={
-                "skip": skip,
-                "limit": data_defs.FETCH_LIMIT
-            }
-        )
-        try:
-            response.raise_for_status()
-        except requests.RequestException as e:
-            print(f"Error fetching messages: {e}")
-            raise
-
-        data = response.json()
+        data = _query_api(skip, data_defs.FETCH_LIMIT)
 
         items = data.get("items", [])
         if not items:
