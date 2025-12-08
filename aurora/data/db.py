@@ -88,3 +88,8 @@ def populate_db():
                 WHERE id NOT IN (SELECT id FROM message_fts);
             """
         )
+
+    # Warm page cache
+    with engine.connect() as conn:
+        conn.execute("SELECT * FROM message")
+        conn.execute("SELECT rowid FROM message_fts")

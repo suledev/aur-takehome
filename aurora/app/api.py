@@ -28,9 +28,13 @@ def search_endpoint(
     limit: int = Query(10, ge=1, le=100, description="Max number of results to return"),
     offset: int = Query(0, ge=0, description="Number of results to skip")
 ):
+    if limit > 100:
+        raise HTTPException(status_code=422, detail="Limit cannot exceed 100")
     try:
         results = client.search_messages(q, limit=limit, offset=offset)
         return {"count": len(results), "results": results}
     except Exception as e:
-        print(f"Error during search: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(
+            status_code=500,
+            detail="An internal error occurred, please try again later."
+        ) from e

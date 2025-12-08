@@ -15,13 +15,13 @@ def search_messages(
 
     query = text(
         f"""
-        SELECT m.*
-        FROM message AS m
-        JOIN message_fts AS f
-          ON m.id = f.id
-        WHERE f.message MATCH :query
-        ORDER BY m.timestamp DESC
-        LIMIT {limit} OFFSET {offset}
+          SELECT m.*
+          FROM message AS m
+          JOIN message_fts AS f
+            ON m.id = f.id
+          WHERE f.message MATCH :query
+          ORDER BY m.timestamp DESC
+          LIMIT {limit} OFFSET {offset}
         """
     )
 
