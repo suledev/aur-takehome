@@ -72,7 +72,7 @@ def test_search_handles_internal_error(client, monkeypatch):
     resp = client.get("/search?q=error")
     assert resp.status_code == 500
     body = resp.json()
-    assert "boom" in body.get("detail", "")
+    assert "internal error" in body.get("detail", "")
 
 
 def test_process_time_header_is_set(client, monkeypatch):
